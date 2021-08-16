@@ -1,13 +1,31 @@
 version: '3'
 
+volumes:
+  am-db-data:
+
 services:
   web:
     build: .
+    command: python manage.py runserver 0.0.0.0:8000
     image: 'scd53n00/attendance-management'
     container_name: 'attendance-management'
     ports:
       - '8000:8000'
     volumes:
       - '.:/home/attendance-management'
+    environment:
+      - 'DATABASE_PASSWORD=postgres'
     tty: true
     stdin_open: true
+    depends_on:
+      - db
+    links:
+      - db
+
+  db:
+    image: postgres
+    environment:
+      - 'POSTGRES_USER=postgres'
+      - 'POSTGRES_PASSWORD=postgres'
+    volumes:
+      - 'am-db-data:/var/lib/postgresql/data'
