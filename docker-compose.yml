@@ -6,7 +6,7 @@ volumes:
 services:
   web:
     build: .
-    command: uwsgi --socket :8001 --module mysite.wsgi --py-autoreload 1 --logto /tmp/mylog.log
+    command: ./setup.sh
     image: 'scd53n00/attendance-management'
     container_name: 'attendance-management'
     expose:
