@@ -6,11 +6,11 @@ volumes:
 services:
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: uwsgi --socket :8001 --module mysite.wsgi --py-autoreload 1 --logto /tmp/mylog.log
     image: 'scd53n00/attendance-management'
     container_name: 'attendance-management'
-    ports:
-      - '8000:8000'
+    expose:
+        - "8001"
     volumes:
       - '.:/home/attendance-management'
     environment:
@@ -30,3 +30,14 @@ services:
       - 'PGTZ=Asia/Tokyo'
     volumes:
       - 'am-db-data:/var/lib/postgresql/data'
+
+  nginx:
+    image: nginx
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./nginx/conf:/etc/nginx/conf.d
+      - ./nginx/uwsgi_params:/etc/nginx/uwsgi_params
+      - ./mysite/static:/static
+    depends_on:
+      - web
